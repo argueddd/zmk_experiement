@@ -8,7 +8,7 @@ import numpy as np
 import librosa
 from typing import Tuple
 
-from under_water_signal_recognize.src.get_w_mel_feature import W_melspec
+from under_water_signal_recognize.src.utils.get_w_mel_feature import W_melspec
 
 
 def load_mat_file_into_numpy(file_path_data, file_path_label):
@@ -87,10 +87,80 @@ def build_balanced_dataset(
     return features.astype(np.float32), labels
 
 
+def normalized_covariance_matrix(D):
+    """
+    计算归一化的协方差矩阵（相关系数矩阵），即每个元素除以对应特征列的二范数乘积。
+
+    参数:
+        D (np.ndarray): 输入数据矩阵，形状为 (N, J)，N 为样本数，J 为特征数。
+
+    返回:
+        np.ndarray: 归一化后的协方差矩阵，形状为 (J, J)。
+    """
+    # 计算未归一化的协方差矩阵
+    C = D.T @ D
+
+    # 计算每列的二范数（L2 norm）
+    norms = np.linalg.norm(D, axis=0)
+
+    # 构造范数乘积矩阵
+    norm_matrix = np.outer(norms, norms)
+
+    # 防止除以0
+    norm_matrix[norm_matrix == 0] = 1e-10
+
+    # 归一化协方差矩阵
+    C_normalized = C / norm_matrix
+
+    return C_normalized
+
+
+def compute_MR(A: np.ndarray, alpha: float = 2.0) -> float:
+    """
+    计算归一化的 M_R 值。
+
+    参数:
+        A (np.ndarray): 输入归一化协方差矩阵 (J, J)
+        alpha (float): 指数参数，要求 alpha > 0 且 alpha ≠ 1
+
+    返回:
+        float: 归一化度量 M_R
+    """
+    if alpha <= 0 or alpha == 1:
+        raise ValueError("alpha must be > 0 and ≠ 1")
+
+    J = A.shape[0]
+
+    # 矩阵 A 的 α 次幂
+    A_alpha = np.linalg.matrix_power(A, int(alpha))
+
+    # 计算 Tr(A^α) 和 Tr(A)
+    tr_A_alpha = np.trace(A_alpha)
+    tr_A = np.trace(A)
+
+    # 计算 M_R
+    numerator = np.log(tr_A_alpha) - alpha * np.log(tr_A)
+    denominator = np.log(J ** (alpha - 1))
+    MR = 1 + numerator / denominator
+
+    return MR
+
+
+
 if __name__ == '__main__':
     features, labels = build_balanced_dataset()
-    np.savez_compressed("..//data//DeepShip//Test//deepship_dataset.npz", features=features, labels=labels)
+    features = features.transpose(0, 2, 1)  # (N, 310, 199)
+
+    # 对每个样本进行归一化协方差处理
+    normalized_features = np.array([
+        normalized_covariance_matrix(sample) for sample in features
+    ])  # shape: (N, 310, 310)
+
+    MR_values = np.array([compute_MR(A, alpha=2) for A in normalized_features])
+
+    np.savez_compressed("..//data//DeepShip//Test//deepship_dataset.npz", features=normalized_features, labels=labels)
     print("✅ Saved dataset to deepship_dataset.npz")
+
 
 
 

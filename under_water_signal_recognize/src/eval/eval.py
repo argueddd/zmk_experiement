@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
-from under_water_signal_recognize.src.conv1d_classifier import Conv1DRowWiseClassifier
-from under_water_signal_recognize.src.dataset import SignalDataset
+from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier
+from under_water_signal_recognize.src.data.dataset import SignalDataset
 
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_recall_fscore_support
 import matplotlib.pyplot as plt
@@ -57,7 +57,8 @@ def plot_classification_results(y_true, y_pred):
 
 # 加载 .npz 文件数据
 data = np.load('../data/DeepShip/Test/deepship_dataset.npz')
-features = data['features']  # shape: (2000, 199, 310)
+features = data['features'].transpose(0, 2, 1)  # shape: (2000, 199, 310)
+print("eval feature shape:", features.shape)
 labels = data['labels']      # shape: (2000,)
 
 # 创建测试集加载器
@@ -66,7 +67,7 @@ test_loader = DataLoader(SignalDataset(features, labels), batch_size=32)
 # 加载模型
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = Conv1DRowWiseClassifier(num_rows=features.shape[1], num_classes=4).to(device)
-model.load_state_dict(torch.load("conv1d_classifier.pth", map_location=device))
+model.load_state_dict(torch.load("conv1d_classifier_mr.pth", map_location=device))
 model.eval()
 
 # 推理
