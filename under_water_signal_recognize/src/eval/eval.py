@@ -67,7 +67,7 @@ test_loader = DataLoader(SignalDataset(features, labels), batch_size=32)
 # 加载模型
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = Conv1DRowWiseClassifier(num_rows=features.shape[1], num_classes=4).to(device)
-model.load_state_dict(torch.load("conv1d_classifier_mr.pth", map_location=device))
+model.load_state_dict(torch.load("./models/conv1d_classifier_mr.pth", map_location=device))
 model.eval()
 
 # 推理

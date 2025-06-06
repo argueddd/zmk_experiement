@@ -3,25 +3,23 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 from under_water_signal_recognize.src.data.dataset import SignalDataset
-from under_water_signal_recognize.src.data.preprocess import load_mat_file_into_numpy
 from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier
 from under_water_signal_recognize.src.utils.mr_loss import batch_mr_loss
 
 # ==== 参数配置 ====
-BATCH_SIZE = 16
+BATCH_SIZE = 64
 LR = 1e-3
-EPOCHS = 50
-LAMBDA = 0.5
-SIGMA = 0.0001
+EPOCHS = 100
+ALP = 1
+LAMBDA = 0.8
+SIGMA = 0.5
 PATIENCE = 5
 
 # ==== 加载数据 ====
-features, labels = load_mat_file_into_numpy('../data/Wmel_Feature.mat', '../data/Label.mat')
-features = features.astype(np.float32)
-print("train feature shape:", features.shape)
-
-labels = labels.squeeze().astype(np.int64) - 1
-
+data = np.load('../data/DeepShip/npz/deepship_trained_dataset.npz')
+features = data['features'] # shape: (b, 199, 310)
+print("eval feature shape:", features.shape)
+labels = data['labels']
 train_loader = DataLoader(SignalDataset(features, labels), batch_size=BATCH_SIZE, shuffle=True)
 
 # ==== 初始化模型 ====
@@ -47,7 +45,7 @@ for epoch in range(EPOCHS):
         output = model(X_batch)
         ce_loss = criterion(output, y_batch)
         mr_loss = batch_mr_loss(X_batch, sigma=SIGMA)
-        total_loss = ce_loss + LAMBDA * mr_loss
+        total_loss = ALP*ce_loss + LAMBDA * mr_loss
         total_loss.backward()
         optimizer.step()
         total_loss_val += total_loss.item()
@@ -69,8 +67,8 @@ for epoch in range(EPOCHS):
 
 # ==== 保存模型 ====
 if best_model_state is not None:
-    torch.save(best_model_state, "conv1d_classifier_mr.pth")
+    torch.save(best_model_state, "models/conv1d_classifier_mr.pth")
     print("Model saved to conv1d_classifier_mr.pth")
 else:
-    torch.save(model.state_dict(), "conv1d_classifier_last.pth")
+    torch.save(model.state_dict(), "../models/conv1d_classifier_last.pth")
     print("Model saved to conv1d_classifier_last.pth (no improvement)")

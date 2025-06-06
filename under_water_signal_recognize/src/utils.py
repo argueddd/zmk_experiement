@@ -44,7 +44,8 @@ def build_balanced_dataset(
     L_w: int = 960,
     step: int = 100,
     target_fs: int = 32000,
-    num_per_class: int = 500
+    num_per_class: int = 500,
+    mode = "train"
 ) -> Tuple[np.ndarray, np.ndarray]:
     class_map = {
         'Cargo': 0,
@@ -57,7 +58,10 @@ def build_balanced_dataset(
     all_labels = []
 
     for class_name, label in class_map.items():
-        folder_path = os.path.join(root_dir, class_name, "Test")
+        if mode == "train":
+            folder_path = os.path.join(root_dir, "train", class_name)
+        else:
+            folder_path = os.path.join(root_dir, class_name, "Test")
         wav_files = [f for f in os.listdir(folder_path) if f.endswith('.wav')]
         random.shuffle(wav_files)
 
@@ -148,18 +152,9 @@ def compute_MR(A: np.ndarray, alpha: float = 2.0) -> float:
 
 
 if __name__ == '__main__':
-    features, labels = build_balanced_dataset()
-    features = features.transpose(0, 2, 1)  # (N, 310, 199)
-
-    # 对每个样本进行归一化协方差处理
-    normalized_features = np.array([
-        normalized_covariance_matrix(sample) for sample in features
-    ])  # shape: (N, 310, 310)
-
-    MR_values = np.array([compute_MR(A, alpha=2) for A in normalized_features])
-
-    np.savez_compressed("..//data//DeepShip//Test//deepship_dataset.npz", features=normalized_features, labels=labels)
-    print("✅ Saved dataset to deepship_dataset.npz")
+    features, labels = build_balanced_dataset(mode="train")
+    np.savez_compressed("..//data//DeepShip//npz//deepship_trained_dataset.npz", features=features, labels=labels)
+    print("Saved dataset to deepship_trained_dataset.npz")
 
 
 

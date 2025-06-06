@@ -32,6 +32,6 @@ def batch_mr_loss(batch_X: torch.Tensor, sigma: float = 0.5) -> torch.Tensor:
         mr = compute_MR_torch(norm_cov, alpha=2)
         mr_list.append(mr)
     mr_tensor = torch.stack(mr_list)
-    # torch.exp(-sigma * mr_tensor).mean()
-    return mr_tensor.mean()
+    return torch.exp(mr_tensor/(-sigma)).mean()
+    # return mr_tensor.mean()
 
