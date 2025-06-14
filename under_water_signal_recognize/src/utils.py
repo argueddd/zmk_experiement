@@ -29,7 +29,7 @@ def build_test_dataset_from_wav_folder(folder_path: str, L_w: int=960, step: int
             try:
                 # 读取音频，自动重采样
                 y, sr = librosa.load(file_path, sr=target_fs)
-                sorted_W = W_melspec(y, L_w=L_w, step=step, fs=sr)
+                sorted_W = W_melspec(y, L_w=L_w, step=step)
                 features_list.append(sorted_W)
             except Exception as e:
                 print(f"❌ Skipping {fname}: {e}")
@@ -72,7 +72,7 @@ def build_balanced_dataset(
             file_path = os.path.join(folder_path, fname)
             try:
                 y, sr = librosa.load(file_path, sr=target_fs)
-                sorted_W = W_melspec(y, L_w=L_w, step=step, fs=sr)
+                sorted_W = W_melspec(y, L_w=L_w, step=step)
 
                 if sorted_W.shape != (199, 310):
                     print(f"Skipped {fname} in {class_name}: shape {sorted_W.shape}")

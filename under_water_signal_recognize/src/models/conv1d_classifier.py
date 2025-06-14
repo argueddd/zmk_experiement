@@ -38,7 +38,7 @@ class Conv1DRowWiseClassifier(nn.Module):
 
         # 分类输出
         x = self.fc(x)  # [B, num_classes]
-        return F.log_softmax(x, dim=1)
+        return F.softmax(x, dim=1)
 
 if __name__ == '__main__':
     pass

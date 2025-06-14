@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def W_melspec(y, L_w, step, fs):
+def W_melspec(y, L_w, step):
     """
     Equivalent of the MATLAB function W_melspec.
     
@@ -24,9 +24,9 @@ def W_melspec(y, L_w, step, fs):
         window = (window - np.mean(window))
         window /= np.linalg.norm(window)
         W1 = np.abs(np.fft.fft(window, 2048))
-        W.append(W1[1:200])  # MATLAB 2:200 == Python 1:200 (0-indexed)
+        W.append(W1[1:200])
 
-    W = np.array(W).T  # Transpose to match W(:,i) in MATLAB
+    W = np.array(W).T
 
     n = W.shape[1]
     Uniform_variable = np.arange(1, n + 1) / n
