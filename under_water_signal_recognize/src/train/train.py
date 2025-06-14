@@ -73,7 +73,7 @@ for epoch in range(EPOCHS):
     avg_loss = total_loss_val / len(train_loader)
     epoch_time = time.time() - start_time
 
-    print(f"Epoch {epoch + 1}/{EPOCHS} - Loss: {avg_loss:.4f}")
+    print(f"Epoch {epoch + 1}/{EPOCHS} - Loss: {avg_loss:.4f} - Time: {epoch_time:.2f}")
 
     # ==== Early Stopping 检查 ====
     if avg_loss < best_loss - 1e-4:
