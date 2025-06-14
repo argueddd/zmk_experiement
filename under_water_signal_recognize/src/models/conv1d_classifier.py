@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -38,7 +39,20 @@ class Conv1DRowWiseClassifier(nn.Module):
 
         # 分类输出
         x = self.fc(x)  # [B, num_classes]
-        return F.log_softmax(x, dim=1)
+        # 使用softmax转换为概率分布
+        x = F.softmax(x, dim=1)
+
+        # 计算累积概率
+        x = torch.cumsum(x, dim=1)
+        return x
+
+
+def cumulative_bce_loss(output, target):
+    """计算累积概率输出与目标累积标签之间的BCE损失"""
+    return torch.mean(torch.sum(torch.abs(output - target), dim=1))
+    # criterion = nn.CrossEntropyLoss()
+    # return criterion(output, target)
+
 
 if __name__ == '__main__':
     pass

@@ -20,25 +20,6 @@ def load_mat_file_into_numpy(file_path_data, file_path_label):
     return data, label
 
 
-def build_test_dataset_from_wav_folder(folder_path: str, L_w: int=960, step: int=100, target_fs: int=32000) -> Tuple[np.ndarray, np.ndarray]:
-    features_list = []
-
-    for fname in os.listdir(folder_path):
-        if fname.endswith('.wav'):
-            file_path = os.path.join(folder_path, fname)
-            try:
-                # 读取音频，自动重采样
-                y, sr = librosa.load(file_path, sr=target_fs)
-                sorted_W = W_melspec(y, L_w=L_w, step=step, fs=sr)
-                features_list.append(sorted_W)
-            except Exception as e:
-                print(f"❌ Skipping {fname}: {e}")
-
-    features = np.stack(features_list)  # (n, 310, 199)
-    labels = np.zeros(len(features), dtype=np.int64)
-    return features.astype(np.float32), labels
-
-
 def build_balanced_dataset(
     root_dir: str = '..//data//DeepShip',
     L_w: int = 960,
@@ -72,11 +53,11 @@ def build_balanced_dataset(
             file_path = os.path.join(folder_path, fname)
             try:
                 y, sr = librosa.load(file_path, sr=target_fs)
-                sorted_W = W_melspec(y, L_w=L_w, step=step, fs=sr)
+                sorted_W = W_melspec(y, L_w=L_w, step=step, fs=sr)[0]
 
-                if sorted_W.shape != (199, 310):
-                    print(f"Skipped {fname} in {class_name}: shape {sorted_W.shape}")
-                    continue
+                # if sorted_W.shape != (199, 310):
+                #     print(f"Skipped {fname} in {class_name}: shape {sorted_W.shape}")
+                #     continue
 
                 all_features.append(sorted_W)
                 all_labels.append(label)
@@ -86,7 +67,7 @@ def build_balanced_dataset(
 
         print(f"Collected {count} valid samples for class '{class_name}'")
 
-    features = np.stack(all_features)  # shape: (N, 199, 310)
+    features = np.stack(all_features)
     labels = np.array(all_labels, dtype=np.int64)
     return features.astype(np.float32), labels
 
@@ -152,9 +133,10 @@ def compute_MR(A: np.ndarray, alpha: float = 2.0) -> float:
 
 
 if __name__ == '__main__':
-    features, labels = build_balanced_dataset(mode="train")
-    np.savez_compressed("..//data//DeepShip//npz//deepship_trained_dataset.npz", features=features, labels=labels)
-    print("Saved dataset to deepship_trained_dataset.npz")
+    model = "test"
+    features, labels = build_balanced_dataset(mode=model)
+    np.savez_compressed(f"..//data//DeepShip//npz//deepship_{model}ed_dataset_window.npz", features=features, labels=labels)
+
 
 
 
