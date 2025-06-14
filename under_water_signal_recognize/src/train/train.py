@@ -16,14 +16,15 @@ SIGMA = 0.005
 PATIENCE = 5
 
 # ==== 加载数据 ====
-data = np.load('../data/DeepShip/npz/deepship_trained_dataset_window.npz')
+data = np.load('data/DeepShip/npz/deepship_trained_dataset_window.npz')
 features = data['features']
 print("eval feature shape:", features.shape)
 labels = data['labels']
 train_loader = DataLoader(SignalDataset(features, labels), batch_size=BATCH_SIZE, shuffle=True)
 
 # ==== 初始化模型 ====
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps")
+# device = torch.device("mps" if torch.cuda.is_available() else "cpu")
 model = Conv1DRowWiseClassifier(num_rows=features.shape[1], num_classes=4).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
