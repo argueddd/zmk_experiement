@@ -1,3 +1,5 @@
+import time
+
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
@@ -36,6 +38,7 @@ epochs_no_improve = 0
 
 # ==== 训练循环 ====
 for epoch in range(EPOCHS):
+    start_time = time.time()
     model.train()
     total_loss_val = 0
 
@@ -68,6 +71,8 @@ for epoch in range(EPOCHS):
         total_loss_val += total_loss.item()
 
     avg_loss = total_loss_val / len(train_loader)
+    epoch_time = time.time() - start_time
+
     print(f"Epoch {epoch + 1}/{EPOCHS} - Loss: {avg_loss:.4f}")
 
     # ==== Early Stopping 检查 ====
