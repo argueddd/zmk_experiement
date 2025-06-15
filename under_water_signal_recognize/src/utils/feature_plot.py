@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from under_water_signal_recognize.src.utils.get_w_mel_feature import W_melspec
 
-wav_path = "E:/PyProjs/zmk_experiement/under_water_signal_recognize/data/DeepShip/Cargo/Test/44_10.wav"
+wav_path = "data/DeepShip/train/Cargo/41_1.wav"
 signal, sample_rate = librosa.load(wav_path, sr=None)  # sr=None 保持原始采样率
 
 # 显示基本信息
@@ -35,7 +35,7 @@ plt.tight_layout()
 plt.show()
 
 # 提取W向量谱
-W_specs = W_melspec(y=signal, L_w=100, step=50, fs=sample_rate)
+W_specs = W_melspec(y=signal, L_w=960, step=100, fs=sample_rate)
 # 绘制W向量谱
 plt.figure(figsize=(14, 5))
 librosa.display.specshow(W_specs[0], sr=sample_rate,

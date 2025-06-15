@@ -5,7 +5,8 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 from under_water_signal_recognize.src.data.dataset import SignalDataset
-from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier, cumulative_bce_loss
+from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier, cumulative_bce_loss, \
+    bce_loss
 from under_water_signal_recognize.src.utils.mr_loss import batch_mr_loss
 
 # ==== 参数配置 ====
@@ -13,8 +14,8 @@ BATCH_SIZE = 64
 LR = 1e-3
 EPOCHS = 100
 ALP = 1
-LAMBDA = 0.5
-SIGMA = 0.005
+LAMBDA = 0.7
+SIGMA = 0.5
 PATIENCE = 5
 
 # ==== 加载数据 ====
@@ -63,7 +64,9 @@ for epoch in range(EPOCHS):
         output = model(X_batch)
 
         # 使用累积概率损失
-        ce_loss = cumulative_bce_loss(output, cumulative_labels)
+        # ce_loss = cumulative_bce_loss(output, cumulative_labels)
+        ce_loss = bce_loss(output, y_batch)
+
         mr_loss = batch_mr_loss(X_batch, sigma=SIGMA)
         total_loss = ALP * ce_loss + LAMBDA * mr_loss
         total_loss.backward()

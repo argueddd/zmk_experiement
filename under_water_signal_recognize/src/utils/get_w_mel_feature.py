@@ -26,7 +26,7 @@ def W_melspec(y, L_w, step, fs):
         window = y[start: start + L_w]
         window = (window - np.mean(window))
         window /= np.linalg.norm(window)
-        W1 = np.abs(np.fft.fft(window, 4096))
+        W1 = np.abs(np.fft.fft(window, 2048))
         W.append(W1[1:200])  # MATLAB 2:200 == Python 1:200 (0-indexed)
     window_spec = np.array(W).T  # Transpose to match W(:,i) in MATLAB
     sorted_window_spec = sorted_spec(window_spec)
