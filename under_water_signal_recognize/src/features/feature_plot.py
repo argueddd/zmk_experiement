@@ -1,8 +1,7 @@
-import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
-from under_water_signal_recognize.src.utils.get_w_mel_feature import W_melspec
+from under_water_signal_recognize.src.features.get_w_mel_feature import W_melspec
 
 wav_path = "data/DeepShip/train/Cargo/41_1.wav"
 signal, sample_rate = librosa.load(wav_path, sr=None)  # sr=None 保持原始采样率

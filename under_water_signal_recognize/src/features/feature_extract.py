@@ -8,7 +8,7 @@ import numpy as np
 import librosa
 from typing import Tuple
 
-from under_water_signal_recognize.src.utils.get_w_mel_feature import W_melspec
+from under_water_signal_recognize.src.features.get_w_mel_feature import W_melspec
 
 
 def load_mat_file_into_numpy(file_path_data, file_path_label):
@@ -21,7 +21,7 @@ def load_mat_file_into_numpy(file_path_data, file_path_label):
 
 
 def build_balanced_dataset(
-    root_dir: str = '..//data//DeepShip',
+    root_dir: str = 'data/DeepShip',
     L_w: int = 960,
     step: int = 100,
     target_fs: int = 32000,
@@ -133,9 +133,9 @@ def compute_MR(A: np.ndarray, alpha: float = 2.0) -> float:
 
 
 if __name__ == '__main__':
-    model = "test"
+    model = "train"
     features, labels = build_balanced_dataset(mode=model)
-    np.savez_compressed(f"..//data//DeepShip//npz//deepship_{model}ed_dataset_window.npz", features=features, labels=labels)
+    np.savez_compressed(f"data//DeepShip//npz//deepship_{model}ed_dataset_window.npz", features=features, labels=labels)
 
 
 

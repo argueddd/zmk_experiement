@@ -3,7 +3,7 @@ import os
 import numpy as np
 import librosa
 from typing import Tuple
-from under_water_signal_recognize.src.utils.get_w_mel_feature import W_melspec
+from under_water_signal_recognize.src.features.get_w_mel_feature import W_melspec
 
 
 def load_mat_file_into_numpy(file_path_data, file_path_label):

@@ -34,7 +34,7 @@ def W_melspec(y, L_w, step, fs):
 
     stft_spec = signal.stft(y, fs=fs, window='hann', nperseg=L_w, noverlap=L_w - step, nfft=1024)
     stft_spec =stft_spec[-1][1:200][:].T
-    sorted_stft_spec = sorted_spec(librosa.power_to_db(stft_spec, ref=np.max))
+    sorted_stft_spec = sorted_spec(librosa.power_to_db(np.abs(stft_spec), ref=np.max))
     sorted_specs.append(sorted_stft_spec)
 
     return sorted_specs
