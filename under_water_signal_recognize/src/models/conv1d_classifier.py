@@ -50,12 +50,12 @@ class Conv1DRowWiseClassifier(nn.Module):
 def cumulative_bce_loss(output, target):
     """计算累积概率输出与目标累积标签之间的BCE损失"""
     return torch.mean(torch.sum(torch.abs(output - target), dim=1))
-    # criterion = nn.CrossEntropyLoss()
-    # return criterion(output, target)
+
 
 def bce_loss(output, target):
     criterion = nn.CrossEntropyLoss()
     return criterion(output, target)
+
 
 if __name__ == '__main__':
     pass

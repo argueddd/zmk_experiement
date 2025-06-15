@@ -1,12 +1,11 @@
 import time
 
-import torch
 import numpy as np
+import torch
 from torch.utils.data import DataLoader
 
 from under_water_signal_recognize.src.data.dataset import SignalDataset
-from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier, cumulative_bce_loss, \
-    bce_loss
+from under_water_signal_recognize.src.models.conv1d_classifier import Conv1DRowWiseClassifier, bce_loss
 from under_water_signal_recognize.src.utils.mr_loss import batch_mr_loss
 
 # ==== 参数配置 ====
@@ -26,8 +25,13 @@ labels = data['labels']
 train_loader = DataLoader(SignalDataset(features, labels), batch_size=BATCH_SIZE, shuffle=True)
 
 # ==== 初始化模型 ====
-device = torch.device("mps")
-# device = torch.device("mps" if torch.cuda.is_available() else "cpu")
+
+if torch.backends.mps.is_available():
+    device = torch.device("mps")
+elif torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
 model = Conv1DRowWiseClassifier(num_rows=features.shape[1], num_classes=4).to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
