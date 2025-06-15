@@ -21,7 +21,7 @@ PATIENCE = 5
 # ==== 加载数据 ====
 data = np.load('data/DeepShip/npz/deepship_trained_dataset_window.npz')
 features = data['features']
-print("eval feature shape:", features.shape)
+print("trained feature shape:", features.shape)
 labels = data['labels']
 train_loader = DataLoader(SignalDataset(features, labels), batch_size=BATCH_SIZE, shuffle=True)
 

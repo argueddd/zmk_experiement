@@ -2,7 +2,6 @@ import random
 
 import scipy.io
 
-
 import os
 import numpy as np
 import librosa
@@ -21,12 +20,12 @@ def load_mat_file_into_numpy(file_path_data, file_path_label):
 
 
 def build_balanced_dataset(
-    root_dir: str = 'data/DeepShip',
-    L_w: int = 960,
-    step: int = 100,
-    target_fs: int = 32000,
-    num_per_class: int = 500,
-    mode = "train"
+        root_dir: str = 'data/DeepShip',
+        L_w: int = 960,
+        step: int = 100,
+        target_fs: int = 32000,
+        num_per_class: int = 500,
+        mode="train"
 ) -> Tuple[np.ndarray, np.ndarray]:
     class_map = {
         'Cargo': 0,
@@ -42,7 +41,7 @@ def build_balanced_dataset(
         if mode == "train":
             folder_path = os.path.join(root_dir, "train", class_name)
         else:
-            folder_path = os.path.join(root_dir, class_name, "Test")
+            folder_path = os.path.join(root_dir, "test", class_name)
         wav_files = [f for f in os.listdir(folder_path) if f.endswith('.wav')]
         random.shuffle(wav_files)
 
@@ -131,13 +130,7 @@ def compute_MR(A: np.ndarray, alpha: float = 2.0) -> float:
     return MR
 
 
-
 if __name__ == '__main__':
-    model = "train"
+    model = "test"
     features, labels = build_balanced_dataset(mode=model)
-    np.savez_compressed(f"data//DeepShip//npz//deepship_{model}ed_dataset_window.npz", features=features, labels=labels)
-
-
-
-
-
+    np.savez_compressed(f"data/DeepShip/npz/deepship_{model}ed_dataset_window.npz", features=features, labels=labels)
