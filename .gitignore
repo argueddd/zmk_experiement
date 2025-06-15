@@ -1,4 +1,4 @@
-.idea
+.idea/
 .venv
 /under_water_signal_recognize/data
 /under_water_signal_recognize/models
